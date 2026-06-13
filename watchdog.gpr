@@ -8,17 +8,13 @@
 
 project Watchdog is
 
-   --  Project description
-   for Project_File_Encoding use "utf-8";
+   --  Source directories
    for Source_Dirs use (".");
    for Object_Dir use "obj";
    for Exec_Dir use "bin";
 
-   --  Main source files
+   --  Main source file
    for Main use ("watchdog.adb");
-
-   --  Ada standard library
-   for Source_Dirs ("Ada") use ("");
 
    --  Compiler options for safety-critical code
    package Compiler is
@@ -28,8 +24,7 @@ project Watchdog is
          "-gnatw.e", --  Warn on unreachable code
          "-gnatw.m", --  Warn on modified but unused variables
          "-gnatw.u", --  Warn on unused variables
-         "-gnatw.x", --  Warn on unused exceptions
-         "-O2"       --  Optimization level 2
+         "-gnatw.x"  --  Warn on unused exceptions
       );
    end Compiler;
 
