@@ -1,0 +1,66 @@
+--  watchdog.gpr
+--  
+--  GNAT Project File for Watchdog Timer
+--  Safety-critical heartbeat monitor
+--
+--  Author: Sternenfisch
+--  License: MIT
+
+project Watchdog is
+
+   --  Project description
+   for Project_File_Encoding use "utf-8";
+   for Source_Dirs use (".");
+   for Object_Dir use "obj";
+   for Exec_Dir use "bin";
+
+   --  Main source files
+   for Main use ("watchdog.adb");
+
+   --  Ada standard library
+   for Source_Dirs ("Ada") use ("");
+
+   --  Compiler options for safety-critical code
+   package Compiler is
+      for Default_Switches ("Ada") use (
+         "-gnatN",  --  No assertions (can be enabled for debugging)
+         "-gnatp",  --  Suppress info messages
+         "-gnatw.e", --  Warn on unreachable code
+         "-gnatw.m", --  Warn on modified but unused variables
+         "-gnatw.u", --  Warn on unused variables
+         "-gnatw.x", --  Warn on unused exceptions
+         "-O2"       --  Optimization level 2
+      );
+   end Compiler;
+
+   --  Linker options
+   package Linker is
+      for Default_Switches ("Ada") use ("-static");
+   end Linker;
+
+   --  Build scenarios
+   type Build_Type is ("Debug", "Release");
+   Build : Build_Type := External ("BUILD", "Release");
+
+   case Build is
+      when Debug =>
+         package Compiler is
+            for Default_Switches ("Ada") use (
+               "-g",           --  Debug symbols
+               "-gnata",       --  Enable assertions
+               "-gnatd.E",     --  Enable dynamic checks
+               "-O0"           --  No optimization for debugging
+            );
+         end Compiler;
+
+      when Release =>
+         package Compiler is
+            for Default_Switches ("Ada") use (
+               "-gnatN",       --  No assertions
+               "-gnatp",       --  Suppress info messages
+               "-O2"           --  Optimization level 2
+            );
+         end Compiler;
+   end case;
+
+end Watchdog;
