@@ -61,6 +61,9 @@ project Watchdog is
                "-O2"           --  Optimization level 2
             );
          end Compiler;
+
+      when others =>
+         null;
    end case;
 
 end Watchdog;
