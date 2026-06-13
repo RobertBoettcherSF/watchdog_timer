@@ -67,11 +67,7 @@ package body Watchdog is
    begin
       if Instance.State = Armed then
          if Elapsed >= Instance.Config.Timeout then
-            --  Timeout has occurred, trigger the action
-            Instance.State := Triggered;
-            if Instance.Config.Action /= null then
-               Instance.Config.Action.all;
-            end if;
+            --  Timeout has occurred, return zero and indicate triggered state
             return Time_Span_Zero;
          else
             return Instance.Config.Timeout - Elapsed;
@@ -80,6 +76,19 @@ package body Watchdog is
          return Time_Span_Zero;
       end if;
    end Time_Remaining;
+
+   --  Check and update the watchdog state (separate procedure for state changes)
+   procedure Check_Timeout (Instance : in out Watchdog_Instance) is
+      Now : constant Time := Clock;
+      Elapsed : Time_Span := Now - Instance.Last_Kick;
+   begin
+      if Instance.State = Armed and then Elapsed >= Instance.Config.Timeout then
+         Instance.State := Triggered;
+         if Instance.Config.Action /= null then
+            Instance.Config.Action.all;
+         end if;
+      end if;
+   end Check_Timeout;
 
 begin
    --  Optional: Initialize a default watchdog instance if needed

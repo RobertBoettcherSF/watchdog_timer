@@ -50,12 +50,15 @@ package Watchdog is
    --  Get the remaining time until the watchdog triggers
    function Time_Remaining (Instance : Watchdog_Instance) return Time_Span;
 
+   --  Check and update the watchdog state (call this to trigger timeout actions)
+   procedure Check_Timeout (Instance : in out Watchdog_Instance);
+
 private
 
    --  Internal structure for the watchdog instance
    type Watchdog_Instance is record
       Config      : Watchdog_Configuration;
-      Last_Kick   : Time := Clock_Epoch;  --  Last time the watchdog was kicked
+      Last_Kick   : Time;  --  Last time the watchdog was kicked
       State       : Watchdog_State := Disabled;
    end record;
 
